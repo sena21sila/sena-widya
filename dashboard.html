@@ -921,6 +921,28 @@
           <p id="empty-msg">Belum ada tamu.</p>
         </div>
       </div>
+
+      <!-- Card Import/Export -->
+      <div class="card">
+        <div class="card-title"><i class="ri-file-excel-2-line"></i> Import & Export Data</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+          <label class="btn btn-outline" style="cursor:pointer;color:var(--text);">
+            <i class="ri-upload-2-line"></i> Import Excel
+            <input type="file" id="csv-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleImportFile(this)">
+          </label>
+          <button class="btn btn-outline" onclick="downloadTemplate()"><i class="ri-file-download-line"></i> Unduh Template</button>
+          <button class="btn btn-outline" onclick="exportToExcel()"><i class="ri-file-excel-line"></i> Export ke Excel</button>
+        </div>
+        <div id="import-preview" style="display:none">
+          <div id="import-msg" style="font-size:13px;color:var(--muted);margin-bottom:12px"></div>
+          <div id="import-table-wrap" style="overflow-x:auto;border-radius:8px;border:1px solid var(--border);margin-bottom:14px"></div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-primary" onclick="confirmImport()"><i class="ri-check-line"></i> Import Sekarang</button>
+            <button class="btn btn-outline" onclick="cancelImport()"><i class="ri-close-line"></i> Batal</button>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px">Format Excel: Kolom <code>Nama</code> wajib ada. Kolom <code>No WA</code> opsional (format: 628xxx).</p>
+      </div>
     </div>
 
     <!-- === RSVP === -->
@@ -1517,7 +1539,13 @@ Salam hangat,
     function selectAll() { document.querySelectorAll('.chk-row').forEach(c => c.checked = true); updateBulkCount(); }
     function deselectAll() { document.querySelectorAll('.chk-row').forEach(c => c.checked = false); updateBulkCount(); }
     function toggleAll(el) { document.querySelectorAll('.chk-row').forEach(c => c.checked = el.checked); updateBulkCount(); }
-    function updateBulkCount() { document.getElementById('bulk-count').textContent = `${document.querySelectorAll('.chk-row:checked').length} dipilih`; }
+    function updateBulkCount() {
+      const count = document.querySelectorAll('.chk-row:checked').length;
+      const bar = document.getElementById('bulk-bar');
+      const info = document.getElementById('bulk-count');
+      if (info) info.textContent = `${count} dipilih`;
+      if (bar) bar.style.display = count > 0 ? 'flex' : 'none';
+    }
     function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function fmtTime(iso) { try { return new Date(iso).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return iso; } }
     function switchTab(name, el) {
@@ -1530,6 +1558,15 @@ Salam hangat,
     // Alias untuk tombol bulk-bar
     function bulkWA() { bulkSend(); }
     function bulkDelete() { deleteSelected(); }
+    // Alias untuk checkbox bulk-bar (Pilih Semua / Batal Pilih)
+    function bulkSelect(all) {
+      if (all) { selectAll(); }
+      else { deselectAll(); }
+      // Tampilkan / sembunyikan bulk-bar
+      const count = document.querySelectorAll('.chk-row:checked').length;
+      const bar = document.getElementById('bulk-bar');
+      if (bar) bar.style.display = count > 0 ? 'flex' : 'none';
+    }
 
     // ============================================================
     //  IMPORT / EXPORT
@@ -1692,18 +1729,18 @@ Salam hangat,
         <span class="badge ${bc}"><i class="${icon}"></i> ${r.status}</span>
         <strong style="flex:1;font-size:15px;color:var(--gold-light);">${esc(r.nama)}</strong>
         <span style="font-size:12px;color:var(--muted);background:var(--card2);padding:6px 12px;border-radius:8px;font-weight:700;border:1px solid var(--border);">${r.jumlah} Orang</span>
-        <button class="btn btn-outline btn-icon" style="width:36px;height:36px;color:var(--red);border-color:rgba(255,77,77,0.2);" onclick="deleteRsvp('${r.idTamu}')" title="Hapus"><i class="ri-delete-bin-line"></i></button>
+        <button class="btn btn-outline btn-icon" style="width:36px;height:36px;color:var(--red);border-color:rgba(255,77,77,0.2);" onclick="deleteRsvp('${r.idTamu}','${esc(r.nama)}')" title="Hapus"><i class="ri-delete-bin-line"></i></button>
         ${r.catatan ? `<div style="width:100%;margin-top:4px;padding:16px;background:rgba(255,255,255,0.02);border-radius:10px;font-size:13px;color:var(--text);line-height:1.6;border-left:3px solid var(--gold);">${esc(r.catatan)}</div>` : ''}
       </div>`;
       }).join('');
     }
 
-    async function deleteRsvp(idTamu) {
+    async function deleteRsvp(idTamu, nama) {
       if (!(await customConfirm('Hapus RSVP', 'Hapus konfirmasi kehadiran ini secara permanen?'))) return;
       try {
-        const r = await api('deleteRsvp', { idTamu });
+        const r = await api('deleteRsvp', { idTamu, nama });
         if (r.ok) {
-          rsvpDataCache = rsvpDataCache.filter(x => x.idTamu !== idTamu);
+          rsvpDataCache = rsvpDataCache.filter(x => !(x.idTamu === idTamu && (!nama || x.nama === nama)));
           showToast('RSVP dihapus');
           renderRsvp();
         } else {
