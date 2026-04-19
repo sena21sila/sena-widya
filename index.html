@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="">
+<html lang="id" data-theme="light">
 
 <head>
   <meta charset="UTF-8">
@@ -17,7 +17,9 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;500;600&family=Caveat:wght@600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;500;600&family=Italianno&family=Jost:wght@300;400;500&family=Noto+Serif+Balinese:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -60,7 +62,7 @@
   <!-- ============================================
        COVER — DARK POSTCARD FLIP
   ============================================= -->
-  <div id="cover">
+  <div id="cover" onclick="openInvitation()" style="cursor: pointer;">
     <div class="postcard">
       <div class="pc-front">
 
@@ -83,8 +85,12 @@
           <p class="cover-guest" id="cover-guest"></p>
         </div>
 
-        <div class="pc-wax" onclick="openInvitation()" id="seal-btn" role="button" aria-label="Buka Undangan">BUKA</div>
-        <div class="pc-hint">Ketuk Untuk Membuka</div>
+        <div class="bird-seal" id="seal-btn" title="Buka Undangan">
+          <!-- Menggunakan merpati.svg custom dari user -->
+          <img src="merpati.svg" alt="Buka Undangan"
+            style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;">
+        </div>
+        <div class="pc-hint">Ketuk Di Mana Saja Untuk Membuka</div>
 
 
 
@@ -103,10 +109,11 @@
       <!-- Hero polaroid with video -->
       <div class="hero-polaroid polaroid" style="cursor:default">
         <div class="tape"></div>
-        <video class="hero-video" autoplay muted loop playsinline preload="metadata">
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata"
+          poster="https://res.cloudinary.com/drijzjqnq/image/upload/w_600,q_auto,f_auto/v1774488217/thumbnail_sipflj.jpg">
           <source src="https://res.cloudinary.com/drijzjqnq/video/upload/v1774483234/hero_rxzpuz.mp4" type="video/mp4">
         </video>
-        <div class="polaroid-caption">#SENAntiasaBersamaWIDYA</div>
+        <div class="polaroid-caption hero-hashtag">#SENAntiasaBersamaWIDYA</div>
       </div>
 
       <!-- Text block: wraps into right column on desktop -->
@@ -143,7 +150,8 @@
     <!-- SECTION 2: PEMBUKA UNDANGAN (Om Swastyastu → Mempelai) -->
     <section aria-label="Kata Pembuka">
       <div class="vintage-paper reveal">
-        <h2 class="intro-greeting">Om Swastyastu</h2>
+        <h2 class="intro-greeting aksara-bali">ᬒᬁ ᬲ᭄ᬯᬲ᭄ᬢ᭄ᬬᬲ᭄ᬢᬸ</h2>
+        <div class="intro-greeting-latin">Om Swastyastu</div>
         <p class="intro-text">
           Atas Asung Kertha Wara Nugraha Ida Sang Hyang Widhi Wasa,
           kami mengundang kehadiran Bapak/Ibu/Saudara/i untuk memberikan
@@ -483,7 +491,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <audio id="bg-music" loop preload="none">
+  <audio id="bg-music" loop preload="metadata">
     <source src="https://res.cloudinary.com/drijzjqnq/video/upload/v1774485618/music_eh3xne.mp3" type="audio/mpeg">
   </audio>
 
