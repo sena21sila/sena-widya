@@ -15,6 +15,9 @@
   <meta property="og:image:height" content="630">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;500;600&family=Caveat:wght@600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -22,8 +25,16 @@
 
   <!-- LOADER -->
   <div id="loader">
-    <div class="l-stamp">SW</div>
-    <div class="l-text">Memuat</div>
+    <div class="jepun">
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="petal"></div>
+      <div class="jepun-heart"></div>
+    </div>
+    <div class="loader-letters">S<span class="loader-amp">&amp;</span>W</div>
+    <div class="l-text">Memuat Undangan...</div>
   </div>
 
   <!-- BLOCKED PAGE -->
@@ -55,12 +66,27 @@
 
         <div class="post-stamp">POSTAGE<br>R.S.V.P</div>
 
-        <div class="pc-title">You're Invited</div>
-        <div class="pc-guest-title">Special Delivery For:</div>
-        <div class="pc-guest" id="cover-guest"></div>
+        <div class="lux-header">Undangan<br>Pernikahan</div>
 
-        <div class="pc-wax" onclick="openInvitation()" id="seal-btn" role="button" aria-label="Buka Undangan">OPEN</div>
+        <div class="cover-names">
+          <span id="cover-p1">Sena</span><br>
+          <span class="cover-amp" style="font-size:16px; letter-spacing:0.1em; display:inline-block; margin: 10px 0;">—
+            dan —</span><br>
+          <span id="cover-p2">Widya</span>
+        </div>
+
+        <p class="cover-date" id="cover-date">27 <span style="margin:0 4px;opacity:0.35;">&bull;</span> 05 <span
+            style="margin:0 4px;opacity:0.35;">&bull;</span> 2026</p>
+
+        <div class="lux-guest-section">
+          <p class="cover-to">Kepada Yth.</p>
+          <p class="cover-guest" id="cover-guest"></p>
+        </div>
+
+        <div class="pc-wax" onclick="openInvitation()" id="seal-btn" role="button" aria-label="Buka Undangan">BUKA</div>
         <div class="pc-hint">Ketuk Untuk Membuka</div>
+
+
 
       </div>
     </div>
