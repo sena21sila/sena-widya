@@ -12,15 +12,15 @@ const STATIC = {
 };
 const MEDIA = {
   hero:   "https://res.cloudinary.com/drijzjqnq/video/upload/v1774483234/hero_rxzpuz.mp4",
-  pria:   "https://res.cloudinary.com/drijzjqnq/image/upload/v1774483119/foto-pria_ldildu.webp",
-  wanita: "https://res.cloudinary.com/drijzjqnq/image/upload/v1774483120/foto-wanita_atjfr4.webp",
+  pria:   "https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483119/foto-pria_ldildu.webp",
+  wanita: "https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483120/foto-wanita_atjfr4.webp",
   galeri: [
-    "https://res.cloudinary.com/drijzjqnq/image/upload/v1774483120/galeri-1_vudpqq.webp",
-    "https://res.cloudinary.com/drijzjqnq/image/upload/v1774483120/galeri-2_byvqkr.webp",
-    "https://res.cloudinary.com/drijzjqnq/image/upload/v1774483120/galeri-3_bl3l91.webp",
-    "https://res.cloudinary.com/drijzjqnq/image/upload/v1774483122/galeri-4_jykrju.webp",
-    "https://res.cloudinary.com/drijzjqnq/image/upload/v1774483121/galeri-5_qtwwz1.webp",
-    "https://res.cloudinary.com/drijzjqnq/image/upload/v1774483121/galeri-6_fzgdbd.webp"
+    "https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483120/galeri-1_vudpqq.webp",
+    "https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483120/galeri-2_byvqkr.webp",
+    "https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483120/galeri-3_bl3l91.webp",
+    "https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483122/galeri-4_jykrju.webp",
+    "https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483121/galeri-5_qtwwz1.webp",
+    "https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483121/galeri-6_fzgdbd.webp"
   ]
 };
 
@@ -29,12 +29,21 @@ let cdTimer = null, assetsReady = false, dataReady = false, loaderTimer = null;
 let scrollObserver = null;
 
 // ===== LOADER =====
+let loaderHidden = false;
 function hideLoader() {
-  if (assetsReady && dataReady) {
+  if (assetsReady && dataReady && !loaderHidden) {
+    loaderHidden = true;
     if (loaderTimer) clearTimeout(loaderTimer);
-    requestAnimationFrame(() => requestAnimationFrame(() =>
-      document.getElementById('loader').classList.add('hidden')
-    ));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.getElementById('loader').classList.add('hidden');
+      // Trigger typewriter setelah loader tersembunyi
+      setTimeout(() => {
+        const cg = document.getElementById('cover-guest');
+        if (cg && cg.dataset.typingName) {
+          typewriterEffect(cg, cg.dataset.typingName);
+        }
+      }, 400);
+    }));
   }
 }
 
@@ -71,9 +80,10 @@ window.addEventListener('DOMContentLoaded', async () => {
         const cg = document.getElementById('cover-guest');
         if (r.ok && r.nama) {
           guestNama = r.nama;
-          if (cg) cg.textContent = r.nama;
           const namaInput = document.getElementById('rsvp-nama');
           if (namaInput) namaInput.value = r.nama;
+          // Simpan nama untuk typewriter — jangan langsung set textContent
+          if (cg) cg.dataset.typingName = r.nama;
         } else {
           // Token format valid tapi tidak ada di database → BLOKIR
           const blocked  = document.getElementById('blocked-page');
@@ -90,12 +100,12 @@ window.addEventListener('DOMContentLoaded', async () => {
       } catch {
         // Jika API gagal, tampilkan sebagai Honorable Guest (fallback jaringan)
         const cg = document.getElementById('cover-guest');
-        if (cg) cg.textContent = "Honorable Guest";
+        if (cg) cg.dataset.typingName = 'Honorable Guest';
       }
     })());
   } else {
     const cg = document.getElementById('cover-guest');
-    if (cg) cg.textContent = "Honorable Guest";
+    if (cg) cg.dataset.typingName = 'Honorable Guest';
   }
 
   await Promise.all(promises);
@@ -245,36 +255,33 @@ function initFilmGrain() {
 
 // ===== OPEN INVITATION (Postcard flip & Seal Break) =====
 function openInvitation() {
-  const seal = document.getElementById('seal-btn');
+  const seal  = document.getElementById('seal-btn');
   const cover = document.getElementById('cover');
-  
+  if (!cover || cover.classList.contains('open')) return;
+
   if (seal && !seal.dataset.clicked) {
     seal.dataset.clicked = '1';
-    
     const parent = seal.parentElement;
-    
-    // Duplikat segel jadi dua bagian
-    const leftHalf = seal.cloneNode(true);
+
+    // Duplikat segel jadi dua bagian pecahan
+    const leftHalf  = seal.cloneNode(true);
     const rightHalf = seal.cloneNode(true);
-    
-    // Ganti class untuk triger clip-path & animasi pecah di CSS
-    leftHalf.className = 'pc-wax broken-left';
+    leftHalf.className  = 'pc-wax broken-left';
     rightHalf.className = 'pc-wax broken-right';
     leftHalf.id = ''; rightHalf.id = '';
-    
-    // Posisikan persis di tempat segel asli berada
-    leftHalf.style.top = seal.offsetTop + 'px';
-    leftHalf.style.left = seal.offsetLeft + 'px';
-    rightHalf.style.top = seal.offsetTop + 'px';
+
+    // Posisikan di tempat segel asli
+    leftHalf.style.top   = seal.offsetTop  + 'px';
+    leftHalf.style.left  = seal.offsetLeft + 'px';
+    rightHalf.style.top  = seal.offsetTop  + 'px';
     rightHalf.style.left = seal.offsetLeft + 'px';
-    
-    // Sembunyikan segel asli dan masukkan pecahan
+
     seal.style.visibility = 'hidden';
     parent.appendChild(leftHalf);
     parent.appendChild(rightHalf);
   }
 
-  // Beri delay 500ms agar tamu melihat segelnya pecah dulu, baru sampul terbuka
+  // Delay 500ms agar tamu melihat segel pecah dulu, baru sampul terbuka
   setTimeout(() => {
     cover.classList.add('open');
     document.body.classList.remove('no-scroll');
@@ -296,8 +303,8 @@ function openInvitation() {
       if (vol < 0.75) { vol += 0.04; a.volume = Math.min(0.75, vol); }
       else clearInterval(fade);
     }, 120);
-    const btn = document.getElementById('music-btn');
-    btn.classList.add('active', 'playing');
+    const musicBtn = document.getElementById('music-btn');
+    if (musicBtn) musicBtn.classList.add('active', 'playing');
   }
 }
 
@@ -835,4 +842,27 @@ function esc(s) {
     .replace(/</g,  '&lt;')
     .replace(/>/g,  '&gt;')
     .replace(/"/g,  '&quot;');
+}
+
+// ===== TYPEWRITER EFFECT (dari V7) =====
+function typewriterEffect(el, text, speed = 55) {
+  if (!el) return;
+  // Jika pengguna pilih reduced motion, langsung tampilkan teks
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.textContent = text; return;
+  }
+  el.innerHTML = '';
+  const cursor = document.createElement('span');
+  cursor.className = 'typewriter-cursor';
+  el.appendChild(cursor);
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i < text.length) {
+      el.insertBefore(document.createTextNode(text[i++]), cursor);
+    } else {
+      clearInterval(iv);
+      // Kursor berkedip 1.8 detik lalu hilang
+      setTimeout(() => { if (cursor.parentNode) cursor.remove(); }, 1800);
+    }
+  }, speed);
 }
