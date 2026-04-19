@@ -19,8 +19,9 @@
   --muted:    #9a9088;          /* Muted — still readable */
   --serif:    'Cormorant Garamond', Georgia, serif;
   --display:  'Cinzel', serif;
-  --script:   'Caveat', cursive;
+  --script:   'Italianno', cursive;
   --sans:     'Jost', sans-serif;
+  --bali:     'Noto Serif Balinese', serif;
 }
 
 /* ─── LIGHT MODE ─── */
@@ -261,92 +262,68 @@ body.no-scroll { overflow: hidden; }
   text-align: center; transform: rotate(4deg);
   font-family: var(--display); letter-spacing: 2px;
 }
-.pc-title {
-  font-family: var(--display); font-size: clamp(10px,2.5vw,13px);
-  letter-spacing: 5px; text-transform: uppercase;
-  margin-bottom: clamp(32px,6vh,56px); color: var(--muted);
-}
-.pc-guest-title {
-  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  margin-bottom: 12px; color: var(--muted);
-}
-.pc-guest {
-  font-family: var(--serif);
-  font-size: clamp(28px,7vw,42px);
-  line-height: 1.2; font-style: italic;
-  color: var(--fg); margin-bottom: clamp(32px,6vh,52px);
-}
-.pc-wax {
-  width: clamp(74px,16vw,90px);
-  height: clamp(74px,16vw,90px);
-  /* Bentuk asimetris natural pipih pinggirannya untuk kesan wax meleleh */
-  border-radius: 48% 52% 51% 49% / 49% 51% 48% 52%;
-  /* Gradien radial 3D dari warna cerah ke gelap */
-  background: radial-gradient(circle at 30% 30%, #ecd6aa 0%, var(--accent) 40%, var(--accent2) 80%, #4a3e20 100%);
-  /* Bayangan berlapis: cahaya dalam, cekungan dalam, drop shadow realistis */
-  box-shadow: 
-    inset 0 0 8px rgba(0,0,0,0.5), 
-    inset -4px -4px 10px rgba(0,0,0,0.4), 
-    inset 4px 4px 10px rgba(255,255,255,0.3), 
-    0 8px 16px rgba(0,0,0,0.5);
-  color: #3b301a; /* Warna tulisan "OPEN" coklat gelap agar terlihat tercetak/tenggelam */
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--display); font-size: clamp(14px,3.5vw,17px);
-  letter-spacing: 2px; font-weight: 600; cursor: pointer; position: relative;
-  /* Efek deboss pada teks (text terlihat menusuk masuk ke wax) */
-  text-shadow: 1px 1px 0px rgba(255,255,255,0.25), -1px -1px 1px rgba(0,0,0,0.25);
-  transition: transform .3s, filter .3s;
+
+/* Bird Seal (Merpati Terbang) */
+.bird-seal {
+  width: clamp(110px, 28vw, 150px); /* Diperbesar kembali sesuai permintaan */
+  height: clamp(110px, 28vw, 150px);
+  color: var(--accent);
+  margin: 15px auto 0;
+  position: relative;
   z-index: 10;
-}
-/* Cincin stempel bagian dalam (Inner Ring Emboss) */
-.pc-wax::after {
-  content: ''; position: absolute; inset: 6px;
-  border-radius: 50%;
-  border: 1px solid rgba(0,0,0,0.15);
-  /* Efek lighting ukiran ke dalam */
-  box-shadow: 
-    inset 1px 1px 3px rgba(0,0,0,0.3), 
-    inset -1px -1px 2px rgba(255,255,255,0.3),
-    1px 1px 1px rgba(255,255,255,0.2),
-    -1px -1px 1px rgba(0,0,0,0.2);
-  pointer-events: none;
-}
-/* Interaksi Hover */
-.pc-wax:hover { 
-  transform: scale(1.08) rotate(6deg); 
-  filter: brightness(1.1);
-}
-/* Memisahkan Segel Wax jadi 2 bagian */
-.pc-wax.broken-left, .pc-wax.broken-right {
-  position: absolute; pointer-events: none; margin: 0;
-}
-/* Belahan melengkung/bergerigi (zigzag) asimetris agar terlihat spt patahan natural */
-.pc-wax.broken-left {
-  clip-path: polygon(0 0, 48% 0, 60% 40%, 42% 60%, 55% 100%, 0 100%);
-  animation: breakLeft .6s forwards ease-out;
-}
-.pc-wax.broken-right {
-  clip-path: polygon(48% 0, 100% 0, 100% 100%, 55% 100%, 42% 60%, 60% 40%);
-  animation: breakRight .6s forwards ease-out;
-}
-@keyframes breakLeft {
-  0% { transform: scale(1.1); }
-  100% { transform: translateX(-50px) translateY(30px) rotate(-18deg) scale(0.9); opacity: 0; filter: blur(5px); }
-}
-@keyframes breakRight {
-  0% { transform: scale(1.1); }
-  100% { transform: translateX(50px) translateY(10px) rotate(22deg) scale(0.9); opacity: 0; filter: blur(5px); }
+  pointer-events: none; /* Let clicks pass to the cover */
+  /* Animasi nafas/melayang dibuat lebih rileks dan anggun */
+  animation: birdHover 4.5s ease-in-out infinite;
 }
 
-/* Pancaran cahaya (Pulse glow) dari bawah segel untuk CTA (Call to Action) */
-.pc-wax::before {
-  content: ''; position: absolute; inset: 0;
-  border-radius: inherit; z-index: -1;
-  animation: waxPulse 2.5s ease-in-out infinite;
+/* Animasi melayang ringan (Hovering) saat diam */
+@keyframes birdHover {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  50% { transform: translateY(-12px) rotate(-2deg) scale(1.02); }
 }
-@keyframes waxPulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(200,169,110,0.4); }
-  50%      { box-shadow: 0 0 0 16px rgba(200,169,110,0); }
+
+/* Image Tag Merpati Custom User */
+.bird-seal img {
+  width: 100%; height: 100%;
+  transform: scaleX(-1);
+  transform-origin: center center;
+  /* Filter drop shadow agar menyatu elegan dengan background */
+  filter: drop-shadow(2px 6px 6px rgba(0,0,0,0.15));
+}
+
+/* --- STATE: TERBANG (Fly Away / Gliding) --- */
+.bird-seal.fly-away {
+  /* Kurva timing fungsi ini memberi kesan hentakan natural: 
+     lambat sedikit di awal, lalu melesat mulus ke angkasa */
+  animation: swoopingDove 1.5s cubic-bezier(0.34, 1.3, 0.45, 1) forwards;
+}
+
+/* Rute terbang yang jauh lebih sinematik dan hidup */
+@keyframes swoopingDove {
+  0% { 
+    transform: translate(0, 0) rotate(0deg) scale(1); 
+    opacity: 1; 
+  }
+  15% { 
+    /* Antisipasi gerak: merpati turun dan mundur ditarik perlahan */
+    transform: translate(-10%, 15%) rotate(-5deg) scale(0.9); 
+    opacity: 1;
+  }
+  40% { 
+    /* Terbang menukik ke atas lebih tegap */
+    transform: translate(70%, -120%) rotate(22deg) scale(1.1); 
+    opacity: 1;
+  }
+  70% { 
+    /* Melayang mulus ke kejauhan */
+    transform: translate(180%, -300%) rotate(38deg) scale(0.6); 
+    opacity: 0.8;
+  }
+  100% { 
+    /* Hilang ke ufuk angkasa luar layar */
+    transform: translate(320%, -550%) rotate(45deg) scale(0.2); 
+    opacity: 0; 
+  }
 }
 .pc-hint {
   font-size: 9px; margin-top: 14px;
@@ -441,38 +418,7 @@ body.no-scroll { overflow: hidden; }
 }
 
 
-/* "Buka Undangan" button with shimmer */
-.open-btn {
-  position: relative;
-  display: inline-block;
-  padding: 14px 36px;
-  font-family: var(--sans);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--fg);
-  background: transparent;
-  border: 1px solid var(--accent);
-  cursor: pointer;
-  overflow: hidden;
-  transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
-  animation: cvFadeUp 0.9s 0.7s both ease-out;
-}
-.open-btn.lux-btn:hover {
-  background: var(--accent);
-  color: var(--bg);
-  box-shadow: 0 4px 22px rgba(200,169,110,0.32);
-}
-.open-btn:active { transform: scale(0.98); }
-.open-btn-shimmer {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.65s ease;
-}
-.open-btn:hover .open-btn-shimmer { transform: translateX(100%); }
+
 
 /* Entrance animation for cover text elements */
 @keyframes cvFadeUp {
@@ -549,18 +495,6 @@ section {
 .vintage-paper::before { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
 .vintage-paper::after  { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
 
-/* ─── STAMP BORDER ─── */
-.stamp-border {
-  border: 1px dashed var(--bd2);
-  padding: 8px; position: relative;
-}
-.stamp-border::before {
-  content: ''; position: absolute; inset: 6px;
-  border: 1px solid rgba(200,169,110,.12);
-}
-[data-theme="light"] .stamp-border::before {
-  border-color: rgba(110,80,20,.12);
-}
 
 /* ─── TAPE ─── */
 .tape {
@@ -639,6 +573,11 @@ section {
 .hero-polaroid {
   width: clamp(260px, 72vw, 500px);
   margin-bottom: clamp(28px,5vh,44px);
+  /* Fix patah-patah/jagged pada rotasi CSS di laptop */
+  outline: 1px solid transparent;
+  box-shadow: 0 0 1px rgba(0,0,0,0.01);
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
 
 /* Video inside hero polaroid: responsive height */
@@ -744,6 +683,21 @@ section {
   font-style: italic; margin-bottom: 28px;
   color: var(--accent); text-align: center; letter-spacing: .02em;
 }
+.intro-greeting.aksara-bali {
+  font-family: var(--bali);
+  font-style: normal;
+  font-size: clamp(32px, 8vw, 42px);
+  margin-bottom: 18px; /* Tadi 8px, diperlebar agar tidak terlalu mepet */
+}
+.intro-greeting-latin {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 32px;
+}
 .intro-text {
   line-height: 2; font-size: 14px; color: var(--gray);
   text-align: center; max-width: 560px; margin-inline: auto;
@@ -825,10 +779,7 @@ section {
   padding: clamp(28px,5vw,48px); position: relative;
   max-width: 760px; margin: 0 auto; text-align: center;
 }
-.ev-type { font-family: var(--serif); font-size: clamp(20px,5vw,28px); font-style: italic; margin-bottom: 18px; color: var(--fg); }
-.ev-date { font-family: var(--display); font-size: 13px; letter-spacing: 3px; margin-bottom: 10px; color: var(--accent); }
-.ev-time { font-size: 13px; margin-bottom: 22px; color: var(--muted); letter-spacing: 1px; }
-.ev-addr { font-size: 14px; line-height: 2; margin-bottom: 32px; color: var(--gray); }
+
 
 /* ─── BUTTONS ─── */
 .btn-gold {
@@ -896,6 +847,15 @@ section {
   filter: grayscale(0%) sepia(0%);
 }
 .polaroid-caption { font-family: var(--script); font-size: clamp(20px,4vw,24px); color: var(--accent); margin-top: 12px; line-height: 1; }
+/* Font spesifik untuk Hashtag / Tag Line agar terbaca tegas & jelas, terpisah dari gaya font cursive */
+.polaroid-caption.hero-hashtag {
+  font-family: var(--sans);
+  font-size: clamp(13px, 3.5vw, 16px);
+  text-transform: none;
+  letter-spacing: 1.5px;
+  opacity: 0.95;
+  font-weight: 500;
+}
 
 .gallery-grid .polaroid:nth-child(even) { transition-delay: 0.15s; }
 
@@ -1065,7 +1025,8 @@ textarea.custom-input { min-height: 110px; resize: vertical; }
   .book-ornament { font-size: 10px; margin-bottom: 12px; letter-spacing: 4px; }
   .book-page-num { font-size: 7px; margin-bottom: 12px; }
   .flipper-face { padding: 24px 10px; }
-  .book-wrap:hover::after { display: none; } /* hide pause hint on mobile */
+  .book-wrap:hover::after { display: none; }
+  .book-pause-hint { display: none; } /* "Hover" tidak relevan di mobile */
 }
 
 /* ─── FOOTER ─── */
@@ -1116,6 +1077,7 @@ footer {
 .lightbox img {
   max-width: 90vw; max-height: 88vh;
   border: 1px solid var(--bd2);
+  transition: opacity 0.25s ease;
 }
 .lightbox-close {
   position: absolute; top: 18px; right: 18px;
@@ -1288,7 +1250,7 @@ footer {
   .ev-card { padding: 24px 18px; }
   .vintage-paper { padding: 24px 18px; }
   .gallery-grid { grid-template-columns: 1fr 1fr; gap: 12px; padding: 6px; }
-  .c-head { flex-wrap: wrap; }
+
   /* Hero: back to single column on small screens */
   #hero { flex-direction: column; text-align: center; padding: 48px 20px; }
   #hero .hero-right { align-items: center; }
@@ -1309,8 +1271,7 @@ footer {
   .btn-gold { padding: 13px 20px; font-size: 10px; letter-spacing: 2px; }
   .postcard { height: min(84vh, 580px); }
   .pc-guest { font-size: clamp(22px,6.5vw,32px); }
-  .pc-wax { width: 58px; height: 58px; font-size: 12px; }
-  .f-title { font-size: clamp(40px,11vw,56px); }
+
   .hero-polaroid { width: min(85vw, 340px); }
   .hero-video { height: clamp(160px, 50vw, 240px); }
 }
