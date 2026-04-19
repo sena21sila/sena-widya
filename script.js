@@ -242,10 +242,15 @@ function initFilmGrain() {
 
     ctx.globalAlpha = 1;
     // ~12fps — authentic old film speed
-    setTimeout(() => requestAnimationFrame(draw), 82);
+    if (!document.hidden) setTimeout(() => requestAnimationFrame(draw), 82);
   }
 
   draw();
+
+  // Pause grain saat tab tidak terlihat (hemat resource)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) requestAnimationFrame(draw);
+  });
 
   window.addEventListener('resize', () => {
     w = c.width  = window.innerWidth;
@@ -253,7 +258,7 @@ function initFilmGrain() {
   });
 }
 
-// ===== OPEN INVITATION (Postcard flip & Seal Break) =====
+// ===== OPEN INVITATION (Postcard flip & Bird Fly Away) =====
 function openInvitation() {
   const seal  = document.getElementById('seal-btn');
   const cover = document.getElementById('cover');
@@ -261,27 +266,10 @@ function openInvitation() {
 
   if (seal && !seal.dataset.clicked) {
     seal.dataset.clicked = '1';
-    const parent = seal.parentElement;
-
-    // Duplikat segel jadi dua bagian pecahan
-    const leftHalf  = seal.cloneNode(true);
-    const rightHalf = seal.cloneNode(true);
-    leftHalf.className  = 'pc-wax broken-left';
-    rightHalf.className = 'pc-wax broken-right';
-    leftHalf.id = ''; rightHalf.id = '';
-
-    // Posisikan di tempat segel asli
-    leftHalf.style.top   = seal.offsetTop  + 'px';
-    leftHalf.style.left  = seal.offsetLeft + 'px';
-    rightHalf.style.top  = seal.offsetTop  + 'px';
-    rightHalf.style.left = seal.offsetLeft + 'px';
-
-    seal.style.visibility = 'hidden';
-    parent.appendChild(leftHalf);
-    parent.appendChild(rightHalf);
+    seal.classList.add('fly-away'); // Trigger animasi terbang
   }
 
-  // Delay 500ms agar tamu melihat segel pecah dulu, baru sampul terbuka
+  // Delay 1000ms agar tamu menikmati sejenak kepakan burung merpati sebelum sampul terbuka
   setTimeout(() => {
     cover.classList.add('open');
     document.body.classList.remove('no-scroll');
@@ -788,12 +776,7 @@ function setupScrollAnim() {
     '.rek-card',
     '.rsvp-form',
     '.rsvp-stats',
-    '.chat-container',
     '.divider',
-    'footer .f-seal',
-    'footer .f-title',
-    'footer .f-text',
-    'footer .f-date',
     '.watermark',
   ];
 
