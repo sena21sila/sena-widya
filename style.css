@@ -1,7 +1,6 @@
 /* ===== V11 DARK VINTAGE GOLD POSTCARD ===== */
 /* Responsive-first: clamp() everywhere, no fixed pixel heights on hero */
 /* Struktur: V9 (Rustic Postcard) | Warna: V1 (Dark Luxury Gold) */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;500;600&family=Caveat:wght@600;700&family=Jost:wght@300;400;500&display=swap');
 
 /* ─── DESIGN TOKENS ─── */
 :root {
@@ -51,7 +50,6 @@ body {
   /* No tile/SVG background — grain canvas handles texture */
   color: var(--fg);
   font-family: var(--sans);
-  font-weight: 300;
   overflow-x: hidden;
   transition: background-color .5s, color .5s;
   -webkit-font-smoothing: antialiased;
@@ -133,22 +131,64 @@ body.no-scroll { overflow: hidden; }
   transition: opacity .8s, visibility .8s;
 }
 #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-.l-stamp {
-  width: 78px; height: 78px;
-  border: 1px solid var(--bd2); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--serif); font-size: 24px; font-style: italic;
-  color: var(--accent);
-  animation: loaderPulse 1.6s ease-in-out infinite;
+
+/* ── Bunga Jepun ── */
+.jepun {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 16px;
 }
+.petal {
+  position: absolute;
+  width: 22px;
+  height: 44px;
+  left: calc(50% - 11px);
+  top: calc(50% - 44px);
+  border-radius: 50% 50% 30% 30% / 60% 60% 40% 40%;
+  background: linear-gradient(to top, var(--accent2), var(--accent-h));
+  transform-origin: 50% 100%;
+  transition: background 0.6s ease;
+}
+.petal:nth-child(1) { transform: rotate(0deg);   animation: jepunGlow 2s 0.0s ease-in-out infinite; }
+.petal:nth-child(2) { transform: rotate(72deg);  animation: jepunGlow 2s 0.2s ease-in-out infinite; }
+.petal:nth-child(3) { transform: rotate(144deg); animation: jepunGlow 2s 0.4s ease-in-out infinite; }
+.petal:nth-child(4) { transform: rotate(216deg); animation: jepunGlow 2s 0.6s ease-in-out infinite; }
+.petal:nth-child(5) { transform: rotate(288deg); animation: jepunGlow 2s 0.8s ease-in-out infinite; }
+.jepun-heart {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(var(--bg), var(--accent));
+  box-shadow: 0 0 10px var(--accent);
+}
+@keyframes jepunGlow {
+  0%, 100% { opacity: 0.6; filter: brightness(0.9); }
+  50% { opacity: 1; filter: brightness(1.3) drop-shadow(0 0 8px rgba(200,169,110,0.45)); }
+}
+
+/* ── Loader letters ── */
+.loader-letters {
+  font-family: var(--serif);
+  font-size: 30px;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+.loader-amp { font-style: normal; font-size: 18px; margin: 0 4px; }
+
+/* ── Loader text ── */
 .l-text {
-  margin-top: 18px;
   font-family: var(--sans); font-size: 10px;
   letter-spacing: 5px; color: var(--muted); text-transform: uppercase;
+  animation: pulse 2s ease-in-out infinite;
 }
-@keyframes loaderPulse {
-  0%,100% { opacity:.4; transform:scale(.92); box-shadow:0 0 0 0 rgba(200,169,110,.25); }
-  50%      { opacity:1;  transform:scale(1.06); box-shadow:0 0 0 18px rgba(200,169,110,0); }
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
 }
 
 /* ─── COVER — POSTCARD FLIP ─── */
@@ -189,7 +229,8 @@ body.no-scroll { overflow: hidden; }
 }
 .pc-front {
   transform: translateZ(1px);
-  justify-content: center; align-items: center; text-align: center;
+  justify-content: space-between; align-items: center; text-align: center;
+  padding: clamp(28px,6vw,48px) clamp(20px,5vw,36px);
 }
 .pc-back { transform: rotateY(180deg) translateZ(1px); opacity: 0; }
 
@@ -311,6 +352,132 @@ body.no-scroll { overflow: hidden; }
   font-size: 9px; margin-top: 14px;
   opacity: .35; letter-spacing: 4px;
   font-family: var(--sans); text-transform: uppercase; color: var(--fg);
+}
+
+/* ─── COVER TEXT (V7 Typography) ─── */
+/* "The Wedding Of" header label */
+.lux-header {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 20px;
+  animation: cvFadeUp 0.8s 0.1s both ease-out;
+}
+
+/* Couple names — large italic serif */
+.cover-names {
+  font-family: var(--serif);
+  font-size: clamp(36px, 9vw, 54px);
+  font-style: italic;
+  color: var(--fg);
+  line-height: 1.15;
+  margin-bottom: 10px;
+  animation: cvFadeUp 0.9s 0.25s both ease-out;
+}
+.cover-amp {
+  color: var(--accent);
+  font-family: var(--sans);
+  font-style: normal;
+  opacity: 0.7;
+}
+
+/* Date under couple names */
+.cover-date {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  color: var(--muted);
+  margin-bottom: 0;
+  animation: cvFadeUp 0.9s 0.4s both ease-out;
+}
+
+/* Guest divider block */
+.lux-guest-section {
+  padding: 20px 0;
+  border-top: 1px solid var(--bd2);
+  border-bottom: 1px solid var(--bd2);
+  animation: cvFadeUp 0.9s 0.55s both ease-out;
+  /* Reservasi tinggi tetap agar border tidak ikut bergerak saat typewriter berjalan */
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.cover-to {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.cover-guest {
+  font-family: var(--serif);
+  font-size: clamp(32px, 8vw, 48px);
+  color: var(--fg);
+  /* min-height setara satu baris teks agar tingginya stabil sejak awal */
+  min-height: 1.15em;
+  font-style: italic;
+  line-height: 1.15;
+}
+
+/* Kursor berkedip typewriter */
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: cursorBlink 0.75s step-end infinite;
+}
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+
+/* "Buka Undangan" button with shimmer */
+.open-btn {
+  position: relative;
+  display: inline-block;
+  padding: 14px 36px;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+  animation: cvFadeUp 0.9s 0.7s both ease-out;
+}
+.open-btn.lux-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+  box-shadow: 0 4px 22px rgba(200,169,110,0.32);
+}
+.open-btn:active { transform: scale(0.98); }
+.open-btn-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.65s ease;
+}
+.open-btn:hover .open-btn-shimmer { transform: translateX(100%); }
+
+/* Entrance animation for cover text elements */
+@keyframes cvFadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ─── MAIN VISIBILITY ─── */
@@ -495,7 +662,7 @@ section {
 .h-names {
   font-family: var(--serif);
   font-size: clamp(54px, 11vw, 108px);
-  line-height: .85; font-weight: 300; color: var(--fg);
+  line-height: .85; color: var(--fg);
 }
 .h-names .amp {
   display: block; font-style: italic;
@@ -639,7 +806,7 @@ section {
 .cd-num {
   font-family: var(--serif);
   font-size: clamp(36px,9vw,58px);
-  font-weight: 300; line-height: 1; color: var(--accent);
+  line-height: 1; color: var(--accent);
 }
 .cd-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; color: var(--muted); }
 .cd-grid .cd-item:nth-child(2) { transition-delay: 0.15s; }
@@ -760,7 +927,7 @@ section {
 .custom-input {
   width: 100%;
   background: var(--input); border: 1px solid var(--bd2);
-  padding: 15px; font-family: var(--sans); font-size: 14px; font-weight: 300;
+  padding: 15px; font-family: var(--sans); font-size: 14px;
   color: var(--fg); outline: none; transition: border-color .3s;
   appearance: none; -webkit-appearance: none;
 }
@@ -771,7 +938,7 @@ textarea.custom-input { min-height: 110px; resize: vertical; }
   display: flex; justify-content: center; gap: clamp(20px,6vw,44px);
   margin-bottom: clamp(28px,5vh,48px); text-align: center;
 }
-.r-n { font-family: var(--serif); font-size: clamp(40px,10vw,56px); font-weight: 300; line-height: 1; color: var(--accent); }
+.r-n { font-family: var(--serif); font-size: clamp(40px,10vw,56px); line-height: 1; color: var(--accent); }
 .r-l { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
 
 /* ─── CHAT / WISH WALL ─── */
