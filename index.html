@@ -3,9 +3,25 @@
 
 <head>
   <meta charset="UTF-8">
+  <!-- ⚡ Inline theme init — harus PERTAMA agar tidak ada FOUC (Flash of Unstyled Content) -->
+  <script>
+    try {
+      var _t = localStorage.getItem('inv_theme_v11');
+      if (_t !== null) document.documentElement.setAttribute('data-theme', _t === 'light' ? 'light' : '');
+    } catch(e) {}
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Undangan private — jangan diindeks mesin pencari -->
+  <meta name="robots" content="noindex, nofollow">
   <title>Undangan Pernikahan — S &amp; W</title>
   <meta name="description" content="Undangan Pernikahan Sena &amp; Widya, 27 Mei 2026 di Bali">
+  <!-- Theme color untuk browser mobile -->
+  <meta name="theme-color" content="#0d0b08" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="id_ID">
+  <meta property="og:url" content="https://sena-widya.web.id">
   <meta property="og:title" content="Pernikahan — Sena &amp; Widya">
   <meta property="og:description" content="#SENAntiasaBersamaWIDYA">
   <meta property="og:image"
@@ -13,8 +29,20 @@
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:type" content="website">
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pernikahan — Sena &amp; Widya">
+  <meta name="twitter:description" content="#SENAntiasaBersamaWIDYA">
+  <meta name="twitter:image"
+    content="https://res.cloudinary.com/drijzjqnq/image/upload/w_1200,h_630,c_fill,q_auto/v1774488217/thumbnail_sipflj.jpg">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <!-- DNS prefetch & preconnect untuk Cloudinary (semua gambar/video) -->
+  <link rel="dns-prefetch" href="https://res.cloudinary.com">
+  <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
+  <!-- Preload hero poster agar tidak kosong/hitam sebelum video buffer -->
+  <link rel="preload" as="image"
+    href="https://res.cloudinary.com/drijzjqnq/image/upload/w_600,q_auto,f_auto/v1774488217/thumbnail_sipflj.jpg"
+    fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -46,27 +74,36 @@
   </div>
 
   <!-- FIXED BUTTONS -->
-  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Ganti Tema"><svg width="18" height="18"
-      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-      stroke-linejoin="round">
+  <!-- B4: Kedua ikon ada di HTML; CSS yang mengontrol mana yang tampil berdasar data-theme -->
+  <button type="button" class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Ganti Tema" aria-label="Ganti Tema">
+    <!-- Ikon Bulan (dark mode) -->
+    <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-    </svg></button>
-  <button class="music-btn" id="music-btn" onclick="toggleMusic()" title="Musik Latar" aria-label="Musik Latar">
+    </svg>
+    <!-- Ikon Matahari (light mode) -->
+    <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </button>
+  <button type="button" class="music-btn" id="music-btn" onclick="toggleMusic()" title="Musik Latar" aria-label="Musik Latar">
     <span class="m-bar m-bar1"></span><span class="m-bar m-bar2"></span><span class="m-bar m-bar3"></span><span
       class="m-bar m-bar4"></span>
   </button>
 
-  <!-- FILM GRAIN CANVAS -->
-  <canvas id="grain-canvas" aria-hidden="true"></canvas>
+  <!-- FILM GRAIN CANVAS DIHAPUS agar resolusi foto & teks maksimal -->
+  <!-- <canvas id="grain-canvas" aria-hidden="true"></canvas> -->
 
   <!-- ============================================
        COVER — DARK POSTCARD FLIP
   ============================================= -->
-  <div id="cover" onclick="openInvitation()" style="cursor: pointer;">
+  <div id="cover" onclick="openInvitation()"
+    style="cursor: pointer; background: url('https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774488217/thumbnail_sipflj.jpg') center/cover no-repeat;">
     <div class="postcard">
       <div class="pc-front">
-
-        <div class="post-stamp">POSTAGE<br>R.S.V.P</div>
 
         <div class="lux-header">Undangan<br>Pernikahan</div>
 
@@ -83,6 +120,8 @@
         <div class="lux-guest-section">
           <p class="cover-to">Kepada Yth.</p>
           <p class="cover-guest" id="cover-guest"></p>
+          <p style="font-size:10px; color:var(--muted); margin-top:16px; font-family:var(--sans); font-style:italic;">*
+            Mohon maaf apabila ada kesalahan penulisan nama/gelar</p>
         </div>
 
         <div class="bird-seal" id="seal-btn" title="Buka Undangan">
@@ -90,7 +129,7 @@
           <img src="merpati.svg" alt="Buka Undangan"
             style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;">
         </div>
-        <div class="pc-hint">Ketuk Di Mana Saja Untuk Membuka</div>
+        <div class="pc-hint">#SENAntiasaBersamaWIDYA</div>
 
 
 
@@ -109,9 +148,10 @@
       <!-- Hero polaroid with video -->
       <div class="hero-polaroid polaroid" style="cursor:default">
         <div class="tape"></div>
-        <video class="hero-video" autoplay muted loop playsinline preload="metadata"
+        <!-- B2: Lazy load — src tidak di-set di HTML, diassign oleh JS saat openInvitation() agar tidak membuang kuota sebelum undangan dibuka -->
+        <video class="hero-video" id="hero-video" autoplay muted loop playsinline preload="none"
           poster="https://res.cloudinary.com/drijzjqnq/image/upload/w_600,q_auto,f_auto/v1774488217/thumbnail_sipflj.jpg">
-          <source src="https://res.cloudinary.com/drijzjqnq/video/upload/v1774483234/hero_rxzpuz.mp4" type="video/mp4">
+          <source data-src="https://res.cloudinary.com/drijzjqnq/video/upload/v1774483234/hero_rxzpuz.mp4" type="video/mp4">
         </video>
         <div class="polaroid-caption hero-hashtag">#SENAntiasaBersamaWIDYA</div>
       </div>
@@ -125,11 +165,6 @@
           Widya
         </h1>
         <p class="h-date">27 . 05 . 2026</p>
-
-        <div class="scroll-hint" aria-hidden="true">
-          <div class="scroll-mouse"></div>
-          <span>Scroll ke Bawah</span>
-        </div>
       </div>
     </section>
 
@@ -163,6 +198,8 @@
     <!-- COUPLE -->
     <section aria-label="Mempelai">
       <div style="text-align:center">
+        <!-- Floral Ornament 2 -->
+        <div class="theme-flower-2"></div>
         <h2 class="sec-title">Mempelai</h2>
       </div>
       <div class="couple-grid">
@@ -173,9 +210,11 @@
             <img src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483119/foto-pria_ldildu.webp"
               alt="Foto Mempelai Pria" loading="lazy">
           </div>
-          <div class="c-role">Mempelai Pria</div>
           <div class="c-name">Sena Sila. A</div>
-          <div class="c-parent">Putra Bpk. Sila Adnyana</div>
+          <div class="c-parent">
+            Putra pertama tunggal dari pasangan<br>
+            Almarhum I Gusti Gede Nuarya &amp; Gusti Ayu Putu Ratni
+          </div>
         </div>
 
         <div class="c-polaroid reveal">
@@ -185,21 +224,27 @@
               src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483120/foto-wanita_atjfr4.webp"
               alt="Foto Mempelai Wanita" loading="lazy">
           </div>
-          <div class="c-role">Mempelai Wanita</div>
           <div class="c-name">Widya Purnawati</div>
-          <div class="c-parent">Putri Bpk. Purnawa</div>
+          <div class="c-parent">
+            Anak kedua dari dua bersaudara dari pasangan<br>
+            I Nyoman Sutama &amp; Ni Luh Nyoman Adi Wirati
+          </div>
         </div>
 
       </div>
     </section>
 
 
-    <div class="divider"><span>✦</span></div>
+    <div class="divider">
+      <div class="theme-flower-4" style="margin:0;width:clamp(40px,6vw,50px);height:clamp(40px,6vw,50px);opacity:0.9"></div>
+    </div>
 
     <!-- COUNTDOWN -->
-    <section aria-label="Hitung Mundur">
-      <div class="cd-wrap reveal">
-        <div class="cd-title">Menghitung Waktu</div>
+    <section aria-label="Hitung Mundur" class="cd-section reveal">
+      <div class="cd-banner">
+        <!-- Overlay gelap pada gambar memori mempelai -->
+        <div class="cd-bg"></div>
+        <h2 class="cd-title" style="font-family: var(--script); font-size: clamp(48px,11vw,72px); letter-spacing: normal; text-transform: none;">Menuju Hari Bahagia</h2>
         <div class="cd-grid">
           <div class="cd-item reveal">
             <div class="cd-num" id="cd-d">00</div>
@@ -219,7 +264,17 @@
           </div>
         </div>
       </div>
+      <div class="cd-content">
+        <h3 class="cd-subtitle">Mimpi Berdua</h3>
+        <p class="cd-desc">
+          Kami begitu antusias untuk menyambut hari bahagia pernikahan kami bersama keluarga dan sahabat tersayang.
+        </p>
+      </div>
     </section>
+
+    <div class="divider">
+      <div class="theme-flower-5" style="margin:0;width:clamp(40px,6vw,50px);height:clamp(40px,6vw,50px);opacity:0.9"></div>
+    </div>
 
     <!-- ACARA -->
     <section class="event-sec" aria-label="Lokasi &amp; Penyelenggaraan" style="max-width:1100px">
@@ -267,47 +322,44 @@
 
     <!-- GALLERY -->
     <section aria-label="Galeri Foto">
-      <div style="text-align:center;margin-bottom:clamp(28px,5vh,48px)">
-        <h2 class="sec-title">Galeri Foto</h2>
-        <p style="font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase">Momen Bersama Kami
+      <div style="text-align:center;margin-bottom:clamp(32px,6vh,48px)">
+        <!-- Floral Ornament 1 -->
+        <div class="theme-flower"></div>
+        <p
+          style="font-family:var(--sans);font-size:16px;letter-spacing:1px;color:var(--muted);margin-bottom:4px;font-weight:400">
+          A Glimpse of</p>
+        <h2 class="sec-title"
+          style="font-size:clamp(40px,10vw,64px); letter-spacing:1px; text-transform:none; color:var(--accent); font-weight:300;">
+          Our Moments</h2>
+        <p style="font-size:14px;color:var(--muted);max-width:500px;margin:24px auto 0;line-height:1.8">
+          I would rather share one lifetime with you than face all the ages of this world alone.<br>
+          <strong style="color:var(--accent);font-family:var(--sans);font-size:14px;">J. R. R. Tolkien</strong>
         </p>
       </div>
       <div class="gallery-grid" id="gallery-grid">
-        <div class="polaroid reveal">
-          <div class="tape"></div><img
-            src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483120/galeri-1_vudpqq.webp"
+        <div class="gal-item reveal">
+          <img src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483120/galeri-1_vudpqq.webp"
             alt="Galeri 1" loading="lazy">
-          <div class="polaroid-caption">Momen 1</div>
         </div>
-        <div class="polaroid reveal">
-          <div class="tape"></div><img
-            src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483120/galeri-2_byvqkr.webp"
+        <div class="gal-item reveal">
+          <img src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483120/galeri-2_byvqkr.webp"
             alt="Galeri 2" loading="lazy">
-          <div class="polaroid-caption">Momen 2</div>
         </div>
-        <div class="polaroid reveal">
-          <div class="tape"></div><img
-            src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483120/galeri-3_bl3l91.webp"
+        <div class="gal-item reveal">
+          <img src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483120/galeri-3_bl3l91.webp"
             alt="Galeri 3" loading="lazy">
-          <div class="polaroid-caption">Momen 3</div>
         </div>
-        <div class="polaroid reveal">
-          <div class="tape"></div><img
-            src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483122/galeri-4_jykrju.webp"
+        <div class="gal-item reveal">
+          <img src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483122/galeri-4_jykrju.webp"
             alt="Galeri 4" loading="lazy">
-          <div class="polaroid-caption">Momen 4</div>
         </div>
-        <div class="polaroid reveal">
-          <div class="tape"></div><img
-            src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483121/galeri-5_qtwwz1.webp"
+        <div class="gal-item reveal">
+          <img src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483121/galeri-5_qtwwz1.webp"
             alt="Galeri 5" loading="lazy">
-          <div class="polaroid-caption">Momen 5</div>
         </div>
-        <div class="polaroid reveal">
-          <div class="tape"></div><img
-            src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483121/galeri-6_fzgdbd.webp"
+        <div class="gal-item reveal">
+          <img src="https://res.cloudinary.com/drijzjqnq/image/upload/f_auto,q_auto/v1774483121/galeri-6_fzgdbd.webp"
             alt="Galeri 6" loading="lazy">
-          <div class="polaroid-caption">Momen 6</div>
         </div>
       </div>
     </section>
@@ -317,6 +369,8 @@
     <!-- REKENING -->
     <section aria-label="Tanda Kasih">
       <div style="text-align:center;margin-bottom:clamp(28px,5vh,48px)">
+        <!-- Floral Ornament 3 -->
+        <div class="theme-flower-3"></div>
         <h2 class="sec-title">Tanda Kasih</h2>
         <p style="font-size:13px;color:var(--gray);max-width:500px;margin:0 auto;line-height:2">
           Kehadiran Anda adalah hadiah terbesar. Jika Anda ingin memberikan tanda kasih
@@ -327,17 +381,17 @@
         <div class="rek-card reveal">
           <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA"
             class="rek-logo">
-          <div class="rek-num" id="rek1-no">1234567890</div>
+          <div class="rek-num" id="rek1-no">4350523486</div>
           <div class="rek-name">I Gst Putu Sena Sila Adnyana</div>
-          <button class="btn-gold" onclick="copyText('1234567890')" style="font-size:10px;padding:12px 22px">Salin
+          <button class="btn-gold" onclick="copyText('4350523486')" style="font-size:10px;padding:12px 22px">Salin
             Nomor</button>
         </div>
         <div class="rek-card reveal">
           <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" alt="Mandiri"
             class="rek-logo">
-          <div class="rek-num" id="rek2-no">0987654321</div>
+          <div class="rek-num" id="rek2-no">6485598387</div>
           <div class="rek-name">Ni Made Widya Purnawati</div>
-          <button class="btn-gold" onclick="copyText('0987654321')" style="font-size:10px;padding:12px 22px">Salin
+          <button class="btn-gold" onclick="copyText('6485598387')" style="font-size:10px;padding:12px 22px">Salin
             Nomor</button>
         </div>
       </div>
@@ -349,39 +403,47 @@
         <div class="stamp-border" style="padding:clamp(24px,5vw,40px)">
 
           <div style="text-align:center;margin-bottom:clamp(24px,4vh,36px)">
+            <!-- Floral Ornament 6 -->
+            <div class="theme-flower-6"></div>
             <h2 class="sec-title" style="margin-bottom:10px;font-size:clamp(40px,10vw,58px)">Buku Tamu</h2>
             <p style="font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase">
               Harap berikan konfirmasi kehadiran Anda
             </p>
           </div>
 
+          <!-- B9: Angka diawali class 'loading' untuk shimmer skeleton, dihapus JS saat data tiba -->
           <div class="rsvp-stats reveal">
             <div>
-              <div class="r-n" id="stat-hadir">0</div>
+              <div class="r-n loading" id="stat-hadir">0</div>
               <div class="r-l">Hadir</div>
             </div>
             <div style="opacity:.6">
-              <div class="r-n" id="stat-tidak">0</div>
+              <div class="r-n loading" id="stat-tidak">0</div>
               <div class="r-l">Tidak</div>
             </div>
             <div style="opacity:.8">
-              <div class="r-n" id="stat-ragu">0</div>
+              <div class="r-n loading" id="stat-ragu">0</div>
               <div class="r-l">Ragu</div>
             </div>
           </div>
 
           <div class="rsvp-form reveal">
-            <input type="text" id="rsvp-nama" class="custom-input" placeholder="Tuliskan Nama Anda">
+            <label for="rsvp-nama" class="sr-only">Nama Lengkap</label>
+            <input type="text" id="rsvp-nama" class="custom-input" placeholder="Tuliskan Nama Anda" autocomplete="name">
+            <label for="rsvp-status" class="sr-only">Status Kehadiran</label>
             <select id="rsvp-status" class="custom-input">
               <option value="hadir">Bersedia Hadir</option>
               <option value="tidak">Mohon Maaf Belum Bisa</option>
               <option value="ragu">Kondisional</option>
             </select>
+            <label for="rsvp-jumlah" class="sr-only">Jumlah Rombongan</label>
             <input type="number" id="rsvp-jumlah" class="custom-input" min="1" max="20" value="1"
-              placeholder="Jumlah Rombongan">
-            <textarea id="rsvp-pesan" class="custom-input"
+              placeholder="Jumlah Rombongan" autocomplete="off">
+            <label for="rsvp-pesan" class="sr-only">Pesan &amp; Ucapan</label>
+            <textarea id="rsvp-pesan" class="custom-input" maxlength="500"
               placeholder="Tinggalkan pesan, doa, atau kutipan manis..."></textarea>
-            <button class="btn-gold" id="rsvp-btn" onclick="submitRsvp()"
+            <div class="rsvp-char-counter" id="rsvp-char-counter" aria-live="polite">0 / 500</div>
+            <button type="button" class="btn-gold" id="rsvp-btn" onclick="submitRsvp()"
               style="width:100%;padding:17px;font-size:11px;letter-spacing:4px">
               Kirim Buku Tamu
             </button>
@@ -416,14 +478,15 @@
 
     <!-- FOOTER -->
     <footer>
-      <div class="footer-thankyou">Terima Kasih</div>
-      <p class="footer-text">
-        Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan
-        doa restu kepada kami.
-      </p>
-      <div class="footer-names">Sena <span class="footer-amp">&amp;</span> Widya</div>
-      <div class="footer-date">27 <span class="footer-dot">&middot;</span> 05 <span class="footer-dot">&middot;</span>
-        2026</div>
+      <div class="footer-thankyou">Terimakasih</div>
+      <p class="footer-text">Kami Yang Berbahagia</p>
+      <div class="footer-names">
+        Kedua Mempelai <span class="footer-amp" style="display:block; margin: 4px 0;">&amp;</span> Keluarga Besar
+      </div>
+      <div class="aksara-bali footer-bali">
+        ᬒᬁ ᬲᬵᬦ᭄ᬢᬶᬄ᭞ ᬲᬵᬦ᭄ᬢᬶᬄ᭞ ᬲᬵᬦ᭄ᬢᬶᬄ ᬒᬁ
+      </div>
+      <div class="footer-sanskrit">Om Santih, Santih, Santih Om</div>
       <div class="watermark reveal"><span>✦</span>SENAntiasaBersamaWIDYA<span>✦</span></div>
     </footer>
 
@@ -432,13 +495,13 @@
   <!-- CALENDAR MODAL -->
   <div class="calendar-modal" id="cal-modal" role="dialog" aria-modal="true">
     <div class="cal-modal-content stamp-border">
-      <button class="modal-close" onclick="closeCalendarModal()" aria-label="Tutup">✕</button>
+      <button type="button" class="modal-close" onclick="closeCalendarModal()" aria-label="Tutup">✕</button>
       <div class="f-seal" style="margin:0 auto 18px" aria-hidden="true">SW</div>
       <h3 class="modal-title">Simpan Tanggal</h3>
       <p class="modal-p">Tambahkan jadwal ke kalender Anda agar tidak terlewatkan.</p>
-      <button class="modal-btn" onclick="openCal('google')">Google Calendar</button>
-      <button class="modal-btn" onclick="openCal('yahoo')">Yahoo Calendar</button>
-      <button class="modal-btn" onclick="openCal('ics')">iCal / Outlook (ICS)</button>
+      <button type="button" class="modal-btn" onclick="openCal('google')">Google Calendar</button>
+      <button type="button" class="modal-btn" onclick="openCal('yahoo')">Yahoo Calendar</button>
+      <button type="button" class="modal-btn" onclick="openCal('ics')">iCal / Outlook (ICS)</button>
     </div>
   </div>
 
@@ -451,7 +514,7 @@
       <span class="ty-star s2" aria-hidden="true">—</span>
       <span class="ty-star s3" aria-hidden="true">✦</span>
 
-      <button class="modal-close" onclick="document.getElementById('ty-modal').classList.remove('show')"
+      <button type="button" class="modal-close" onclick="document.getElementById('ty-modal').classList.remove('show')"
         aria-label="Tutup">✕</button>
 
       <div class="ty-line"></div>
@@ -473,7 +536,7 @@
 
       <p class="ty-note">Sampai jumpa di hari yang membahagiakan kami. ♥</p>
 
-      <button class="ty-close-btn" onclick="document.getElementById('ty-modal').classList.remove('show')">
+      <button type="button" class="ty-close-btn" onclick="document.getElementById('ty-modal').classList.remove('show')">
         Tutup
       </button>
     </div>
@@ -482,11 +545,12 @@
   <!-- LIGHTBOX -->
   <div class="lightbox" id="lightbox" onclick="if(event.target.id==='lightbox') this.classList.remove('open')"
     role="dialog" aria-modal="true" aria-label="Galeri Foto">
-    <button class="lightbox-close" onclick="document.getElementById('lightbox').classList.remove('open')"
-      aria-label="Tutup Galeri">Tutup</button>
-    <button class="lightbox-nav lightbox-prev" onclick="navGallery(-1)" aria-label="Foto Sebelumnya">&#8592;</button>
-    <button class="lightbox-nav lightbox-next" onclick="navGallery(1)" aria-label="Foto Berikutnya">&#8594;</button>
+    <button type="button" class="lightbox-close" onclick="document.getElementById('lightbox').classList.remove('open')"
+      aria-label="Tutup Galeri">&#x2715;</button>
+    <button type="button" class="lightbox-nav lightbox-prev" onclick="navGallery(-1)" aria-label="Foto Sebelumnya">&#8249;</button>
+    <button type="button" class="lightbox-nav lightbox-next" onclick="navGallery(1)" aria-label="Foto Berikutnya">&#8250;</button>
     <img id="lightbox-img" src="" alt="Foto Galeri">
+    <div class="lightbox-counter" id="lightbox-counter"></div>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
