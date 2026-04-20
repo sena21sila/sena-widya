@@ -147,12 +147,11 @@ function toggleTheme() {
 function initTheme() {
   try {
     const saved = localStorage.getItem('inv_theme_v11');
-    const btn = document.getElementById('theme-btn');
-    if (saved === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-      if (btn) btn.innerHTML = ICON_SUN;
-    } else {
-      if (btn) btn.innerHTML = ICON_MOON;
+    // B4: Ikon sekarang dikontrol sepenuhnya oleh CSS via data-theme attribute.
+    // data-theme sudah di-set oleh inline script di <head>, SEBELUM DOM render,
+    // sehingga tidak ada FOUC. Fungsi ini hanya perlu sync attribute jika ada perbedaan.
+    if (saved !== null) {
+      document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : '');
     }
   } catch {}
 }
@@ -269,7 +268,17 @@ function openInvitation() {
     seal.classList.add('fly-away'); // Trigger animasi terbang
   }
 
-  // Delay 1000ms agar tamu menikmati sejenak kepakan burung merpati sebelum sampul terbuka
+  // B2: Lazy load video hero — src diassign hanya saat undangan dibuka
+  const heroVid = document.getElementById('hero-video');
+  if (heroVid) {
+    const src = heroVid.querySelector('source[data-src]');
+    if (src && !src.getAttribute('src')) {
+      src.setAttribute('src', src.dataset.src);
+      heroVid.load(); // reload elemen video dengan src baru
+    }
+  }
+
+  // Delay 500ms agar tamu menikmati sejenak kepakan burung merpati sebelum sampul terbuka
   setTimeout(() => {
     cover.classList.add('open');
     document.body.classList.remove('no-scroll');
@@ -280,19 +289,29 @@ function openInvitation() {
     }, 1500);
   }, 500);
 
-  // Music fade-in
+  // B6: Music fade-in dengan penanganan kegagalan iOS/Safari yang benar
   const a = document.getElementById('bg-music');
-  const src = (a.querySelector('source')?.src || a.src || '');
-  if (src && !src.endsWith('/') && !src.endsWith('.html')) {
+  const musicBtn = document.getElementById('music-btn');
+  const audioSrc = (a.querySelector('source')?.src || a.src || '');
+  if (audioSrc && !audioSrc.endsWith('/') && !audioSrc.endsWith('.html')) {
     a.volume = 0;
-    a.play().catch(() => {});
-    let vol = 0;
-    const fade = setInterval(() => {
-      if (vol < 0.75) { vol += 0.04; a.volume = Math.min(0.75, vol); }
-      else clearInterval(fade);
-    }, 120);
-    const musicBtn = document.getElementById('music-btn');
-    if (musicBtn) musicBtn.classList.add('active', 'playing');
+    // Tandai button sebagai active DULU, lalu batalkan jika play() gagal
+    if (musicBtn) musicBtn.classList.add('active');
+    a.play().then(() => {
+      // Berhasil: mulai fade in volume & aktifkan animasi equalizer
+      if (musicBtn) musicBtn.classList.add('playing');
+      let vol = 0;
+      const fade = setInterval(() => {
+        if (vol < 0.75) { vol += 0.04; a.volume = Math.min(0.75, vol); }
+        else clearInterval(fade);
+      }, 120);
+    }).catch(() => {
+      // B6: Gagal (iOS autoplay policy) — reset button agar tidak stuck "playing"
+      if (musicBtn) {
+        musicBtn.classList.remove('playing');
+        // Tetap tampil active agar user bisa tap manual
+      }
+    });
   }
 }
 
@@ -342,12 +361,9 @@ function applyStaticMedia() {
 function buildDynamicGallery(imgs) {
   const container = document.querySelector('#gallery-grid');
   if (!container) return;
-  const rotations = [-4, 3, -2.5, 4, -3.5, 2];
   container.innerHTML = imgs.map((url, i) =>
-    `<div class="polaroid reveal" style="transform:rotate(${rotations[i % rotations.length]}deg)">
-      <div class="tape"></div>
+    `<div class="gal-item reveal">
       <img src="${url}" alt="Foto ${i + 1}" loading="lazy">
-      <div class="polaroid-caption">Momen ${i + 1}</div>
     </div>`
   ).join('');
 }
@@ -378,6 +394,12 @@ function startCountdown(dateStr, timeStr) {
         const el = document.getElementById(id);
         if (el) el.textContent = '00';
       });
+      // Tampilkan pesan pasca-event
+      const titleEl = document.querySelector('.cd-title');
+      if (titleEl) {
+        titleEl.textContent = '\u2756 Hari Bahagia Telah Tiba \u2756';
+        titleEl.style.color = 'var(--accent)';
+      }
       clearInterval(cdTimer);
       return;
     }
@@ -485,12 +507,25 @@ async function loadRsvpStats() {
   try {
     const r = await api('getRsvpStats');
     if (r.ok) {
-      const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val || 0; };
+      const set = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.textContent = val || 0;
+          // B9: Hapus skeleton shimmer setelah data nyata tiba
+          el.classList.remove('loading');
+        }
+      };
       set('stat-hadir', r.hadir);
       set('stat-tidak', r.tidak);
       set('stat-ragu',  r.ragu);
     }
-  } catch {}
+  } catch {
+    // Jika gagal, hapus skeleton agar tidak stuck shimmer selamanya
+    ['stat-hadir','stat-tidak','stat-ragu'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.textContent = '—'; el.classList.remove('loading'); }
+    });
+  }
 }
 
 // ===== SUBMIT RSVP =====
@@ -565,9 +600,21 @@ async function submitRsvp() {
         el.dataset.resetBound = '1';
       }
     });
+    // Char counter untuk textarea
+    const pesan   = document.getElementById('rsvp-pesan');
+    const counter = document.getElementById('rsvp-char-counter');
+    if (pesan && counter && !pesan.dataset.counterBound) {
+      pesan.dataset.counterBound = '1';
+      const maxLen = parseInt(pesan.getAttribute('maxlength') || 500);
+      pesan.addEventListener('input', () => {
+        const len = pesan.value.length;
+        counter.textContent = len + ' / ' + maxLen;
+        counter.classList.toggle('near-limit', len >= maxLen * 0.85 && len < maxLen);
+        counter.classList.toggle('at-limit',   len >= maxLen);
+      });
+    }
   }
   document.addEventListener('DOMContentLoaded', tryAttach);
-  // Re-try setelah cover dibuka (main visible)
   document.addEventListener('click', () => setTimeout(tryAttach, 800), { once: true });
 })();
 
@@ -713,10 +760,16 @@ function renderPage(idx, isLeft) {
   const BADGE_MAP = { hadir: 'Bersedia Hadir', tidak: 'Mohon Maaf Belum Bisa', ragu: 'Kondisional' };
   const badge = BADGE_MAP[(w.status || '').toLowerCase()] || 'Tamu Undangan';
 
+  // B5: Jika catatan kosong, tampilkan placeholder elegan alih-alih petik kosong ""
+  const msgText = (w.catatan || '').trim();
+  const msgHtml = msgText
+    ? `<p class="book-msg">"${esc(msgText)}"</p>`
+    : `<p class="book-msg" style="opacity:.35;font-size:.85em">— Tanpa pesan tertulis —</p>`;
+
   let html = `
     <div class="book-page-num">— ${pageNum} —</div>
     <div class="book-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
-    <p class="book-msg">"${esc(w.catatan || '')}"</p>
+    ${msgHtml}
     <div class="book-name">${esc(w.nama || 'Tamu')}</div>
     <div class="book-badge">${badge}</div>`;
   
@@ -731,15 +784,15 @@ let galItems = [], galIdx = 0;
 
 function setupGallery() {
   // Only observe gallery images, NOT the hero polaroid
-  const galleryPolaroids = document.querySelectorAll('#gallery-grid .polaroid, .couple-grid .c-polaroid');
-  galItems = Array.from(document.querySelectorAll('#gallery-grid .polaroid img')).map(img => img.src);
+  galItems = Array.from(document.querySelectorAll('#gallery-grid .gal-item img')).map(img => img.src);
 
-  document.querySelectorAll('#gallery-grid .polaroid').forEach((item, i) => {
+  document.querySelectorAll('#gallery-grid .gal-item').forEach((item, i) => {
     item.addEventListener('click', () => {
       galIdx = i;
       const lbImg = document.getElementById('lightbox-img');
       lbImg.src = galItems[galIdx];
       document.getElementById('lightbox').classList.add('open');
+      updateLightboxCounter();
     });
   });
 
@@ -752,14 +805,46 @@ function setupGallery() {
     if (ex < sx - 40) navGallery(1);
     else if (ex > sx + 40) navGallery(-1);
   }, { passive: true });
-}
+
+  // Keyboard navigation untuk lightbox gallery + B8: buku tamu
+  document.addEventListener('keydown', e => {
+    const lb = document.getElementById('lightbox');
+    if (lb && lb.classList.contains('open')) {
+      // Navigasi lightbox
+      if (e.key === 'ArrowRight') navGallery(1);
+      if (e.key === 'ArrowLeft')  navGallery(-1);
+      if (e.key === 'Escape') lb.classList.remove('open');
+      return; // Jangan proses book juga
+    }
+    // B8: Navigasi buku tamu dengan keyboard ← →
+    if (e.key === 'ArrowRight' && WISHES.length > 2) {
+      if (!bookAnimating) turnBookAuto();
+    }
+    if (e.key === 'ArrowLeft'  && WISHES.length > 2) {
+      if (!bookAnimating) {
+        bookPrevIdx = bookIdx;
+        bookIdx = (bookIdx - 2 + WISHES.length) % WISHES.length;
+        // Normalkan ke angka genap (spread)
+        if (bookIdx % 2 !== 0) bookIdx = Math.max(0, bookIdx - 1);
+        flipBook();
+      }
+    }
+  });
+} // end setupGallery
 
 function navGallery(step) {
   if (!galItems.length) return;
   galIdx = (galIdx + step + galItems.length) % galItems.length;
   const imgEl = document.getElementById('lightbox-img');
   imgEl.style.opacity = '0';
-  setTimeout(() => { imgEl.src = galItems[galIdx]; imgEl.style.opacity = '1'; }, 200);
+  setTimeout(() => { imgEl.src = galItems[galIdx]; imgEl.style.opacity = '1'; updateLightboxCounter(); }, 200);
+}
+
+function updateLightboxCounter() {
+  const counter = document.getElementById('lightbox-counter');
+  if (counter && galItems.length > 1) {
+    counter.textContent = (galIdx + 1) + ' / ' + galItems.length;
+  }
 }
 
 // ===== SCROLL REVEAL (V9 Style IntersectionObserver) =====
@@ -786,7 +871,7 @@ function setupScrollAnim() {
   });
 
   // Add reveal to gallery and couple polaroids (scroll-triggered)
-  document.querySelectorAll('#gallery-grid .polaroid, .couple-grid .c-polaroid').forEach(el => {
+  document.querySelectorAll('#gallery-grid .gal-item, .couple-grid .c-polaroid').forEach(el => {
     el.classList.add('reveal');
   });
 
