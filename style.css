@@ -785,7 +785,7 @@ section {
 .btn-gold {
   display: inline-block;
   font-family: var(--sans); font-size: 11px; letter-spacing: 4px;
-  text-transform: uppercase; font-weight: 400;
+  text-transform: uppercase; 400;
   color: var(--bg); background: var(--accent);
   padding: 15px 30px; text-decoration: none;
   border: 1px solid var(--accent); cursor: pointer;
@@ -1040,7 +1040,7 @@ footer {
 .footer-names {
   font-family: var(--script); font-size: clamp(48px,11vw,72px);
   margin: 40px auto 32px; line-height: 1; color: var(--accent);
-  transform: rotate(-2.5deg); font-weight: 600; letter-spacing: 1px; opacity: 0.95;
+  transform: rotate(-2.5deg); letter-spacing: 1px; opacity: 0.95;
 }
 .footer-amp { color: var(--fg); font-style: normal; opacity: 0.7; font-size: 0.8em; }
 .footer-date { font-family: var(--display); font-size: 11px; letter-spacing: .4em; opacity: .7; margin-bottom: 60px; text-transform: uppercase; color: var(--muted); }
