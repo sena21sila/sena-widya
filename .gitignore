@@ -3,11 +3,10 @@
 #  File sensitif & tidak perlu di-push ke repo
 # ============================================
 
-# Backend Apps Script (mengandung SECRET_KEY!)
+# Backend Apps Script
 apps-script.js
 
 # File sementara / catatan internal
-op.txt
 *.txt
 
 # Editor & OS artifacts
