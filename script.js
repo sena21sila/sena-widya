@@ -53,13 +53,11 @@ loaderTimer = setTimeout(() => {
   hideLoader();
   // Also init animations in case DOMContentLoaded already ran
   if (!scrollObserver) { setupScrollAnim(); setupGallery(); }
-  initFilmGrain();
 }, 6000);
 
 window.addEventListener('load', () => {
   assetsReady = true;
   hideLoader();
-  initFilmGrain();
 });
 
 // ===== MAIN INIT =====
@@ -319,8 +317,15 @@ function openInvitation() {
 function toggleMusic() {
   const a = document.getElementById('bg-music');
   const btn = document.getElementById('music-btn');
-  if (a.paused) { a.play().catch(() => {}); btn.classList.add('playing'); }
-  else          { a.pause(); btn.classList.remove('playing'); }
+  if (a.paused) {
+    a.play().then(() => {
+      btn.classList.add('active');   // Pastikan tombol selalu terlihat
+      btn.classList.add('playing');
+    }).catch(() => {});
+  } else {
+    a.pause();
+    btn.classList.remove('playing');
+  }
 }
 
 // ===== API =====
@@ -363,7 +368,7 @@ function buildDynamicGallery(imgs) {
   if (!container) return;
   container.innerHTML = imgs.map((url, i) =>
     `<div class="gal-item reveal">
-      <img src="${url}" alt="Foto ${i + 1}" loading="lazy">
+      <img src="${url}" alt="Foto Prewedding Sena &amp; Widya ${i + 1}" loading="lazy">
     </div>`
   ).join('');
 }
@@ -449,7 +454,8 @@ function openCal(type) {
       window.open(`https://calendar.yahoo.com/?v=60&title=${encodeURIComponent(title)}&st=${dtS}&et=${dtE}&desc=${encodeURIComponent(desc)}&in_loc=${encodeURIComponent(loc)}`, '_blank');
       break;
     case 'ics': {
-      const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${dtS}\nDTEND:${dtE}\nSUMMARY:${title}\nDESCRIPTION:${desc}\nLOCATION:${loc}\nEND:VEVENT\nEND:VCALENDAR`;
+      // RFC 5545: gunakan \r\n dan TZID eksplisit agar waktu tidak salah interpretasi sebagai UTC
+      const ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Undangan Sena & Widya//ID\r\nBEGIN:VEVENT\r\nDTSTART;TZID=Asia/Makassar:${dtS}\r\nDTEND;TZID=Asia/Makassar:${dtE}\r\nSUMMARY:${title}\r\nDESCRIPTION:${desc}\r\nLOCATION:${loc}\r\nSTATUS:CONFIRMED\r\nEND:VEVENT\r\nEND:VCALENDAR`;
       const blob = new Blob([ics], { type: 'text/calendar' });
       const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'Pernikahan.ics' });
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
@@ -548,7 +554,14 @@ async function submitRsvp() {
   namaEl.value = nama;
 
   const status  = statusEl.value;
-  const jumlah  = parseInt(jumlahEl.value) || 1;
+  const jumlahRaw = parseInt(jumlahEl.value);
+  if (isNaN(jumlahRaw) || jumlahRaw < 1 || jumlahRaw > 20) {
+    jumlahEl.style.animation = 'shake 0.4s';
+    setTimeout(() => jumlahEl.style.animation = '', 400);
+    showToast('Jumlah rombongan tidak valid (1–20)');
+    return;
+  }
+  const jumlah  = jumlahRaw;
   const catatan = pesanEl.value.trim();
 
   // Cek atau Buat Device ID (Session) di LocalStorage
