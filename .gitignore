@@ -1,0 +1,26 @@
+# ============================================
+#  Bundle V11 — .gitignore
+#  File sensitif & tidak perlu di-push ke repo
+# ============================================
+
+# Backend Apps Script (mengandung SECRET_KEY!)
+apps-script.js
+
+# File sementara / catatan internal
+op.txt
+*.txt
+
+# Editor & OS artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# Node / npm (jika pernah dipakai lokal)
+node_modules/
+npm-debug.log*
+
+# XAMPP local config
+*.local
